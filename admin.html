@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UdavCustom — Админ панель</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--black:#0a0a0a;--dark:#141414;--card:#1a1a1a;--red:#e01020;--red2:#a00010;--gray:#9a9a9a;--white:#f0f0f0;--border:#2a2a2a;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--black);color:var(--white);font-family:'Montserrat',sans-serif;min-height:100vh;}
+
+/* LOGIN */
+#loginScreen{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px;}
+.login-box{background:var(--dark);border:1px solid var(--border);padding:50px 40px;width:min(420px,100%);}
+.login-logo{font-family:'Bebas Neue';font-size:32px;letter-spacing:4px;color:var(--red);margin-bottom:6px;}
+.login-sub{font-size:11px;color:var(--gray);letter-spacing:2px;text-transform:uppercase;margin-bottom:36px;}
+.lbl{font-size:10px;color:var(--gray);letter-spacing:2px;text-transform:uppercase;margin-bottom:7px;display:block;}
+.inp{width:100%;background:var(--black);border:1px solid var(--border);color:var(--white);padding:13px 16px;font-family:'Montserrat';font-size:14px;outline:none;margin-bottom:16px;transition:border-color .2s;}
+.inp:focus{border-color:var(--red);}
+.err{color:var(--red);font-size:12px;margin-bottom:12px;display:none;}
+.btn-red{width:100%;background:var(--red);border:none;color:#fff;padding:14px;font-family:'Bebas Neue';font-size:20px;letter-spacing:3px;cursor:pointer;transition:background .2s;clip-path:polygon(10px 0%,100% 0%,calc(100% - 10px) 100%,0% 100%);}
+.btn-red:hover{background:var(--red2);}
+
+/* MAIN */
+#mainScreen{display:none;}
+header{background:var(--dark);border-bottom:1px solid var(--border);padding:0 40px;height:64px;display:flex;align-items:center;justify-content:space-between;}
+.h-logo{font-family:'Bebas Neue';font-size:22px;letter-spacing:3px;color:var(--red);}
+.h-right{display:flex;align-items:center;gap:20px;}
+.h-site{color:var(--gray);text-decoration:none;font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;transition:color .2s;}
+.h-site:hover{color:var(--white);}
+.h-logout{background:none;border:1px solid var(--border);color:var(--gray);padding:8px 16px;font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:all .2s;font-family:'Montserrat';}
+.h-logout:hover{border-color:var(--red);color:var(--red);}
+
+.main-wrap{max-width:1100px;margin:0 auto;padding:40px;}
+.tabs{display:flex;border-bottom:1px solid var(--border);margin-bottom:36px;}
+.tab{padding:12px 24px;background:none;border:none;color:var(--gray);font-family:'Montserrat';font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;}
+.tab.on,.tab:hover{color:var(--red);border-bottom-color:var(--red);}
+
+/* ADD FORM */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:30px;}
+.form-left,.form-right{}
+.fr{margin-bottom:18px;}
+.fr label{display:block;font-size:10px;color:var(--gray);letter-spacing:2px;text-transform:uppercase;margin-bottom:7px;}
+.fr input,.fr select,.fr textarea{width:100%;background:var(--black);border:1px solid var(--border);color:var(--white);padding:12px 15px;font-family:'Montserrat';font-size:13px;outline:none;transition:border-color .2s;}
+.fr input:focus,.fr select:focus,.fr textarea:focus{border-color:var(--red);}
+.fr textarea{height:80px;resize:vertical;}
+.fr select option{background:var(--dark);}
+.upload-area{border:2px dashed var(--border);padding:30px 20px;text-align:center;cursor:pointer;transition:border-color .2s;position:relative;background:var(--black);}
+.upload-area:hover{border-color:var(--red);}
+.upload-area input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+.upload-ico{font-size:36px;margin-bottom:8px;}
+.upload-txt{font-size:12px;color:var(--gray);line-height:1.5;}
+.upload-txt span{color:var(--red);font-weight:700;}
+#photoPreview{width:100%;height:200px;object-fit:cover;display:none;border:1px solid var(--border);margin-top:12px;}
+.form-submit{width:100%;background:var(--red);border:none;color:#fff;padding:14px;font-family:'Bebas Neue';font-size:20px;letter-spacing:3px;cursor:pointer;transition:background .2s;clip-path:polygon(10px 0%,100% 0%,calc(100% - 10px) 100%,0% 100%);margin-top:8px;}
+.form-submit:hover{background:var(--red2);}
+.hint{background:var(--card);border:1px solid var(--border);padding:20px;margin-bottom:24px;font-size:12px;color:var(--gray);line-height:1.7;}
+.hint strong{color:var(--white);}
+.hint code{background:var(--black);color:var(--red);padding:2px 6px;font-size:11px;}
+
+/* PRODUCT LIST */
+.prod-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;}
+.prod-item{background:var(--card);border:1px solid var(--border);overflow:hidden;transition:border-color .2s;}
+.prod-item:hover{border-color:var(--border);}
+.prod-item img{width:100%;height:170px;object-fit:cover;display:block;}
+.prod-item-info{padding:14px;}
+.prod-brand{font-size:10px;color:var(--red);letter-spacing:2px;text-transform:uppercase;font-weight:700;margin-bottom:4px;}
+.prod-name{font-family:'Bebas Neue';font-size:20px;letter-spacing:2px;margin-bottom:4px;}
+.prod-price{font-size:13px;color:var(--gray);margin-bottom:12px;}
+.prod-actions{display:flex;gap:8px;}
+.prod-del{flex:1;background:none;border:1px solid #333;color:var(--gray);padding:8px;font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:all .2s;font-family:'Montserrat';}
+.prod-del:hover{border-color:var(--red);color:var(--red);background:rgba(224,16,32,.05);}
+.empty{text-align:center;padding:60px 20px;color:var(--gray);}
+.empty-ico{font-size:48px;margin-bottom:16px;}
+.empty p{font-size:14px;}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--red);color:#fff;padding:14px 24px;font-weight:700;font-size:13px;letter-spacing:1px;transform:translateY(80px);opacity:0;transition:all .3s;z-index:9999;}
+.toast.show{transform:translateY(0);opacity:1;}
+
+@media(max-width:768px){
+  .form-grid{grid-template-columns:1fr;}
+  header{padding:0 20px;}
+  .main-wrap{padding:24px 16px;}
+  .tabs{overflow-x:auto;}
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginScreen">
+  <div class="login-box">
+    <div class="login-logo">⚙ UDAVCUSTOM</div>
+    <div class="login-sub">Панель управления сайтом</div>
+    <label class="lbl">Пароль</label>
+    <input type="password" id="passInp" class="inp" placeholder="Введите пароль..." onkeydown="if(event.key==='Enter')doLogin()">
+    <div class="err" id="loginErr">❌ Неверный пароль</div>
+    <button class="btn-red" onclick="doLogin()">ВОЙТИ</button>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div id="mainScreen">
+  <header>
+    <div class="h-logo">⚙ UDAVCUSTOM ADMIN</div>
+    <div class="h-right">
+      <a href="udavcustom.html" class="h-site" target="_blank">← Открыть сайт</a>
+      <button class="h-logout" onclick="doLogout()">Выйти</button>
+    </div>
+  </header>
+
+  <div class="main-wrap">
+    <div class="tabs">
+      <button class="tab on" onclick="switchTab('add',this)">➕ Добавить товар</button>
+      <button class="tab" onclick="switchTab('list',this)">📋 Все товары</button>
+      <button class="tab" onclick="switchTab('export',this)">💾 Экспорт кода</button>
+    </div>
+
+    <!-- ADD TAB -->
+    <div id="tabAdd">
+      <div class="hint">
+        <strong>Как добавить товар:</strong> заполни поля, загрузи фото и нажми "Добавить". Товар сохранится в браузере.<br>
+        Когда добавишь все нужные товары — перейди во вкладку <strong>💾 Экспорт кода</strong> и скопируй готовый HTML-блок в файл сайта.
+      </div>
+      <div class="form-grid">
+        <div class="form-left">
+          <div class="fr">
+            <label>Фото товара</label>
+            <div class="upload-area">
+              <input type="file" id="photoFile" accept="image/*" onchange="handlePhoto(this)">
+              <div class="upload-ico">📸</div>
+              <div class="upload-txt">Нажми или перетащи фото<br><span>JPG, PNG — любой размер</span></div>
+            </div>
+            <img id="photoPreview" alt="preview">
+          </div>
+        </div>
+        <div class="form-right">
+          <div class="fr"><label>Бренд</label><input type="text" id="afBrand" placeholder="QJ Motor, Benelli, Honda..."></div>
+          <div class="fr">
+            <label>Категория</label>
+            <select id="afCat">
+              <option value="moto">🏍️ Мотоцикл</option>
+              <option value="qjmoto">🔴 QJ Motor</option>
+              <option value="benelli">🟡 Benelli</option>
+              <option value="quad">🚙 Квадроцикл</option>
+              <option value="scooter">🛵 Скутер</option>
+            </select>
+          </div>
+          <div class="fr"><label>Название модели</label><input type="text" id="afName" placeholder="SRK 600, TRK 502X..."></div>
+          <div class="fr"><label>Описание</label><textarea id="afDesc" placeholder="Краткое описание модели..."></textarea></div>
+          <div class="fr"><label>Цена (₽)</label><input type="text" id="afPrice" placeholder="599 000"></div>
+          <button class="form-submit" onclick="addProduct()">➕ ДОБАВИТЬ ТОВАР</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- LIST TAB -->
+    <div id="tabList" style="display:none;">
+      <div id="prodList"></div>
+    </div>
+
+    <!-- EXPORT TAB -->
+    <div id="tabExport" style="display:none;">
+      <div class="hint">
+        <strong>Инструкция по добавлению товаров на сайт:</strong><br>
+        1. Открой файл <code>udavcustom.html</code> в Блокноте или любом редакторе<br>
+        2. Нажми <code>Ctrl+F</code> и найди текст: <code>&lt;!-- ТОВАРЫ</code><br>
+        3. Вставь скопированный код ПОСЛЕ этой строки<br>
+        4. Сохрани файл — товары появятся на сайте!
+      </div>
+      <div class="fr"><label>Готовый HTML-код для вставки на сайт</label></div>
+      <textarea id="exportCode" style="width:100%;height:300px;background:#0a0a0a;border:1px solid var(--border);color:#c8c8c8;padding:16px;font-family:monospace;font-size:12px;outline:none;resize:vertical;" readonly placeholder="Добавь товары во вкладке 'Добавить товар' — здесь появится код для вставки"></textarea>
+      <button class="form-submit" style="margin-top:12px;" onclick="copyExport()">📋 СКОПИРОВАТЬ КОД</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+var PASS = 'udav2025';
+var products = [];
+var photoData = null;
+
+// ---- LOGIN ----
+function doLogin(){
+  if(document.getElementById('passInp').value === PASS){
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('mainScreen').style.display = 'block';
+    loadProducts();
+  } else {
+    document.getElementById('loginErr').style.display = 'block';
+  }
+}
+function doLogout(){
+  document.getElementById('mainScreen').style.display = 'none';
+  document.getElementById('loginScreen').style.display = 'flex';
+  document.getElementById('passInp').value = '';
+}
+document.getElementById('passInp').addEventListener('keydown', function(e){
+  if(e.key==='Enter') doLogin();
+});
+
+// ---- TABS ----
+function switchTab(tab, btn){
+  document.querySelectorAll('.tab').forEach(function(b){b.classList.remove('on');});
+  btn.classList.add('on');
+  document.getElementById('tabAdd').style.display   = tab==='add'    ? 'block' : 'none';
+  document.getElementById('tabList').style.display  = tab==='list'   ? 'block' : 'none';
+  document.getElementById('tabExport').style.display= tab==='export' ? 'block' : 'none';
+  if(tab==='list')   renderList();
+  if(tab==='export') renderExport();
+}
+
+// ---- PHOTO ----
+function handlePhoto(inp){
+  var file = inp.files[0];
+  if(!file) return;
+  var reader = new FileReader();
+  reader.onload = function(e){
+    photoData = e.target.result;
+    var p = document.getElementById('photoPreview');
+    p.src = photoData;
+    p.style.display = 'block';
+  };
+  reader.readAsDataURL(file);
+}
+
+// ---- ADD PRODUCT ----
+function addProduct(){
+  var brand = document.getElementById('afBrand').value.trim();
+  var name  = document.getElementById('afName').value.trim();
+  var desc  = document.getElementById('afDesc').value.trim();
+  var price = document.getElementById('afPrice').value.trim();
+  var cat   = document.getElementById('afCat').value;
+  if(!brand || !name || !price){ showToast('❌ Заполни бренд, название и цену!'); return; }
+  products.push({ brand:brand, name:name, desc:desc, price:price, cat:cat, photo:photoData||'' });
+  saveProducts();
+  // reset
+  document.getElementById('afBrand').value='';
+  document.getElementById('afName').value='';
+  document.getElementById('afDesc').value='';
+  document.getElementById('afPrice').value='';
+  document.getElementById('photoPreview').style.display='none';
+  document.getElementById('photoFile').value='';
+  photoData = null;
+  showToast('✅ Товар добавлен!');
+}
+
+// ---- RENDER LIST ----
+function renderList(){
+  var el = document.getElementById('prodList');
+  if(!products.length){
+    el.innerHTML = '<div class="empty"><div class="empty-ico">🏍️</div><p>Нет добавленных товаров.<br>Перейди на вкладку «Добавить товар»</p></div>';
+    return;
+  }
+  var html = '<div class="prod-grid">';
+  products.forEach(function(p, i){
+    var ph = p.photo ? p.photo : 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22170%22%3E%3Crect fill=%22%231a1a1a%22 width=%22400%22 height=%22170%22/%3E%3Ctext x=%22200%22 y=%2295%22 text-anchor=%22middle%22 fill=%22%23444%22 font-size=%2248%22%3E%F0%9F%8F%8D%3C/text%3E%3C/svg%3E';
+    html += '<div class="prod-item">';
+    html += '<img src="'+ph+'" alt="'+p.name+'">';
+    html += '<div class="prod-item-info">';
+    html += '<div class="prod-brand">'+p.brand+'</div>';
+    html += '<div class="prod-name">'+p.name+'</div>';
+    html += '<div class="prod-price">'+p.price+' ₽ · '+p.cat+'</div>';
+    html += '<div class="prod-actions">';
+    html += '<button class="prod-del" onclick="delProduct('+i+')">🗑 Удалить</button>';
+    html += '</div></div></div>';
+  });
+  html += '</div>';
+  el.innerHTML = html;
+}
+
+// ---- DELETE ----
+function delProduct(i){
+  if(!confirm('Удалить «'+products[i].brand+' '+products[i].name+'»?')) return;
+  products.splice(i,1);
+  saveProducts();
+  renderList();
+  showToast('🗑 Товар удалён');
+}
+
+// ---- EXPORT ----
+function renderExport(){
+  if(!products.length){
+    document.getElementById('exportCode').value = '<!-- Нет товаров для экспорта -->';
+    return;
+  }
+  var code = '';
+  products.forEach(function(p){
+    var ph = p.photo || '';
+    code += '\n    <div class="pcard" data-cat="'+p.cat+' moto">\n';
+    code += '      <img src="'+ph+'" alt="'+p.name+'">\n';
+    code += '      <div class="pinfo">\n';
+    code += '        <div class="pbrand">'+p.brand+'</div>\n';
+    code += '        <div class="pname">'+p.name+'</div>\n';
+    code += '        <div class="pdesc">'+(p.desc||'Подробности по запросу')+'</div>\n';
+    code += '        <div class="pfoot">\n';
+    code += '          <div class="pprice">'+p.price+' ₽</div>\n';
+    code += '          <button class="pbtn" onclick="goForm(\''+p.brand+' '+p.name+'\')">Заявка</button>\n';
+    code += '        </div>\n';
+    code += '      </div>\n';
+    code += '    </div>\n';
+  });
+  document.getElementById('exportCode').value = code.trim();
+}
+
+function copyExport(){
+  var el = document.getElementById('exportCode');
+  el.select();
+  document.execCommand('copy');
+  showToast('📋 Код скопирован! Вставь в udavcustom.html');
+}
+
+// ---- STORAGE ----
+function saveProducts(){
+  try{ localStorage.setItem('udav_admin_products', JSON.stringify(products)); }catch(e){}
+}
+function loadProducts(){
+  try{
+    var saved = localStorage.getItem('udav_admin_products');
+    if(saved) products = JSON.parse(saved);
+  }catch(e){}
+}
+
+// ---- TOAST ----
+function showToast(msg){
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(function(){ t.classList.remove('show'); }, 3000);
+}
+</script>
+</body>
+</html>
